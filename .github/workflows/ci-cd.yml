@@ -1,0 +1,100 @@
+name: Pipeline CI/CD DevOps
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    name: Build & Validação do Código Node.js/TypeScript
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validar Contracts API
+        run: |
+          cd Contratos
+          npm ci
+          npm run build
+          # Se não houver testes reais implementados, remova ou comente a linha abaixo:
+          npm test --if-present
+
+      - name: Validar Flash Sales API
+        run: |
+          cd "Flash Sales"
+          npm ci
+          npm run build
+          npm test --if-present
+
+  docker-build:
+    name: Build das Imagens Docker
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Imagem Contracts API
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Contratos
+          file: ./Contratos/Dockerfile
+          push: false
+          tags: contracts-api:latest
+
+      - name: Build Imagem Flash Sales API
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Flash Sales
+          file: ./Flash Sales/Dockerfile
+          push: false
+          tags: flash-sales-api:latest
+
+  terraform-validate:
+    name: Validação de Infraestrutura como Código (Terraform)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+
+      - name: Terraform Init & Validate
+        run: |
+          cd terraform
+          terraform init -backend=false
+          terraform validate
+
+  k8s-validate:
+    name: Validação dos Manifestos Kubernetes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Instalar Kubeconform
+        run: |
+          curl -sL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Validar Manifestos K8s
+        run: |
+          kubeconform -summary -strict -kubernetes-version 1.30.0 k8s/
