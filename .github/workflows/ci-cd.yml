@@ -73,7 +73,7 @@ jobs:
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.0
+          terraform_version: 1.9.5
 
       - name: Terraform Init & Validate
         run: |
@@ -89,7 +89,6 @@ jobs:
       - name: Checkout do Código
         uses: actions/checkout@v4
 
-      - name: Instalar kubeval / kubectl
+      - name: Validar Manifestos K8s (Dry-run Offline)
         run: |
-          sudo snap install kubectl --classic
-          kubectl apply --dry-run=client -f k8s/
+          kubectl apply --dry-run=client --validate=false -f k8s/

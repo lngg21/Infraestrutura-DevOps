@@ -58,3 +58,9 @@ desktop.ini
 .idea/
 *.sublime-project
 *.sublime-workspace
+
+#=========================================
+# PDF e Documentos
+#=========================================
+atividade.pdf
+
