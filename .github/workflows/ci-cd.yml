@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop]
+    branches: [ main, develop ]
 
 jobs:
   build-and-test:
@@ -25,14 +25,15 @@ jobs:
           cd Contratos
           npm ci
           npm run build
-          npm test
+          # Se não houver testes reais implementados, remova ou comente a linha abaixo:
+          npm test --if-present
 
       - name: Validar Flash Sales API
         run: |
           cd "Flash Sales"
           npm ci
           npm run build
-          npm test
+          npm test --if-present
 
   docker-build:
     name: Build das Imagens Docker
@@ -81,7 +82,7 @@ jobs:
           terraform init -backend=false
           terraform validate
 
-k8s-validate:
+  k8s-validate:
     name: Validação dos Manifestos Kubernetes
     runs-on: ubuntu-latest
 
