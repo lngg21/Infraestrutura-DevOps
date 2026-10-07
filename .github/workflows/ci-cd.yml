@@ -81,7 +81,7 @@ jobs:
           terraform init -backend=false
           terraform validate
 
-  k8s-validate:
+k8s-validate:
     name: Validação dos Manifestos Kubernetes
     runs-on: ubuntu-latest
 
@@ -89,6 +89,11 @@ jobs:
       - name: Checkout do Código
         uses: actions/checkout@v4
 
-      - name: Validar Manifestos K8s (Dry-run Offline)
+      - name: Instalar Kubeconform
         run: |
-          kubectl apply --dry-run=client --validate=false -f k8s/
+          curl -sL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Validar Manifestos K8s
+        run: |
+          kubeconform -summary -strict -kubernetes-version 1.30.0 k8s/
