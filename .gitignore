@@ -1,0 +1,60 @@
+# ==========================================
+# Dependências e Builds Node.js / TypeScript
+# ==========================================
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+*.log
+
+# Variáveis de Ambiente e Segredos Locais
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ==========================================
+# Terraform / Infraestrutura como Código
+# ==========================================
+# Diretório de plugins locais do Terraform
+.terraform/
+.terraform.lock.hcl
+
+# Arquivos de estado local (tfstate)
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Arquivos de variáveis sensíveis
+*.tfvars
+*.tfvars.json
+
+# Logs de falha do Terraform
+crash.log
+
+# Overrides locais
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# ==========================================
+# Sistema Operacional e Editores
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
